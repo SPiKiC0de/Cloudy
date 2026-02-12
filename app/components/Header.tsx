@@ -3,13 +3,12 @@ import { use, useState } from "react";
 import SearchBox from "./SearchBar";
 import Modal from "./Modal";
 
-
 function Header() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [weather, setWeather] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const [iconFile, setIconFile] = useState<string>("cloudy.gif");
 
   const handleSearch = async (city: string) => {
   const trimmedCity = city.trim();
@@ -64,7 +63,17 @@ function Header() {
 
   setWeather(uiWeather);
 
-
+  if(uiWeather.weatherCode==0){
+    setIconFile("sun.gif");
+  }else if(uiWeather.weatherCode==1||uiWeather.weatherCode==2||uiWeather.weatherCode==3){
+    setIconFile("cloudy.gif") 
+  }else if(uiWeather.weatherCode==45||uiWeather.weatherCode==48)
+  {
+    setIconFile("foggy.gif")
+  }else if(uiWeather.weatherCode==51||uiWeather.weatherCode==53||uiWeather.weatherCode==61||uiWeather.weatherCode==55||uiWeather.weatherCode==63||uiWeather.weatherCode==65||uiWeather.weatherCode==80||uiWeather.weatherCode==81||uiWeather.weatherCode==82||uiWeather.weatherCode==95||uiWeather.weatherCode==96||uiWeather.weatherCode==99){
+    setIconFile("rain.gif")
+  }else if(uiWeather.weatherCode==71||uiWeather.weatherCode==73||uiWeather.weatherCode==75||uiWeather.weatherCode==77||uiWeather.weatherCode==85||uiWeather.weatherCode==86)
+    setIconFile("snow.gif")
   } catch (err) {
     // 4) Превръщаме грешката в читав текст
     const message = err instanceof Error ? err.message : "Възникна неочаквана грешка.";
@@ -75,11 +84,10 @@ function Header() {
   }
 };
 
-
   return (
+    <div className="fixed inset-0 flex items-center justify-center brightness-105">
     <header className="min-h-screen w-full flex flex-col items-center justify-center text-center text-shadow-lg text-shadow-black">
       <h1 className="pb-10 text-7xl font-bold">Welcome to Cloudy</h1>
-      <p className="pb-5">Weather forecast for Bulgaria</p>
       <SearchBox onSearch={handleSearch} />
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         {isLoading && (
@@ -95,15 +103,23 @@ function Header() {
           {!isLoading && error && <p className="text-red-900">{error}</p>}
 
           {!isLoading && !error && weather && (
+            <div className="flex items-center justify-center text-center">
             <div className="text-black">
+                <img
+                src={`/${iconFile}`}
+                alt="Loading"
+                className="w-40 h-40"
+              />
               <p className="font-bold text-lg">City: {weather.city}</p>
               <p>Temperature: {weather.temperature}°C</p>
+            </div>
             </div>
           )}
       </Modal>
 
 
     </header>
+    </div>
   );
 }
 
